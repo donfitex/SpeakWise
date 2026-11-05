@@ -230,3 +230,6 @@ test-results/
 # Private recordings and local media
 media/
 recordings/
+
+private-media/
+backend/staticfiles/

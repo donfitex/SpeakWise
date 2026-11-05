@@ -1,4 +1,4 @@
-import { Recorder } from "./Recorder";
+import { SpeechPractice } from "./SpeechPractice";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "./api";
@@ -228,7 +228,10 @@ export function Classroom() {
                       Model: <strong>{session.activity.example}</strong>
                     </p>
                     {session.activity.kind === "speaking" && (
-                      <Recorder key={session.activity.id} />
+                      <SpeechPractice
+                        key={session.activity.id}
+                        sessionId={session.id}
+                      />
                     )}
                     <form onSubmit={submit}>
                       <label>

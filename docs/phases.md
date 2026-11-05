@@ -59,3 +59,7 @@ Added consent-before-capture, 30-second recording, local preview, track cleanup,
 ## Phase 13 — Speech service adapters
 
 Added separate transcription, synthesis, pronunciation, and alignment protocols, disabled defaults, explicit test-only mock, and optional OpenAI transcription adapter with timeout/failure fallback. Sixteen backend tests pass. No paid provider is enabled or live-tested; calibrated pronunciation and server TTS remain unavailable and report that honestly.
+
+## Phase 14 — Asynchronous speech processing
+
+Added consent/ownership checks, private bounded uploads, idempotent jobs, worker-side audio decoding/duration validation, status polling, transcript deletion, provider fallback, and expiry cleanup. Eighteen backend tests and two frontend tests pass, including synthetic WAV decoding, malformed media, duplicate jobs, expiry, and access denial. Raw audio is removed after processing or failure. Live provider transcription remains unverified; disabled provider fails safely and typed practice remains available.

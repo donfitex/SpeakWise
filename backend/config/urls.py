@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from placement import views as placement
+from speech import views as speech
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -41,4 +42,10 @@ urlpatterns += [
     path("api/v1/lesson-sessions/", classroom.start),
     path("api/v1/lesson-sessions/<uuid:pk>/", classroom.detail),
     path("api/v1/lesson-sessions/<uuid:pk>/turns/", classroom.answer),
+]
+
+urlpatterns += [
+    path("api/v1/lesson-sessions/<uuid:pk>/speech-attempts/", speech.upload),
+    path("api/v1/speech-attempts/<uuid:pk>/status/", speech.detail),
+    path("api/v1/speech-attempts/<uuid:pk>/feedback/", speech.detail),
 ]

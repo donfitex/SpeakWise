@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "curriculum",
     "placement",
     "classroom",
+    "speech",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -115,3 +116,10 @@ SPEECH_PROVIDER = env("SPEECH_PROVIDER", default="disabled")
 SPEECH_API_KEY = env("SPEECH_API_KEY", default="")
 SPEECH_TRANSCRIPTION_MODEL = env("SPEECH_TRANSCRIPTION_MODEL", default="gpt-4o-mini-transcribe")
 ALLOW_MOCK_SPEECH = False
+
+MEDIA_ROOT = BASE_DIR.parent / "private-media"
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 3 * 1024 * 1024
+CELERY_BEAT_SCHEDULE = {
+    "purge-audio": {"task": "speech.tasks.purge_expired_audio", "schedule": 300.0}
+}

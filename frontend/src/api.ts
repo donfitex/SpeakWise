@@ -19,7 +19,9 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
       credentials: "same-origin",
       ...init,
       headers: {
-        "Content-Type": "application/json",
+        ...(init.body instanceof FormData
+          ? {}
+          : { "Content-Type": "application/json" }),
         "X-CSRFToken": decodeURIComponent(csrf),
         ...init.headers,
       },
