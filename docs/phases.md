@@ -15,3 +15,7 @@ Next: Phase 02, local Docker Compose services. Service startup acceptance depend
 ## Phase 02 — Local developer environment
 
 Added Compose services, health checks, persistent private volumes, Dockerfiles with verified TLS trust, loopback port bindings, and startup documentation. `docker compose config --quiet` validates the configuration. Full application startup depends on Phases 03–04; the full-stack acceptance gate remains pending until then.
+
+## Phase 03 — Backend foundation
+
+Added Django settings split, session-authenticated DRF defaults, versioned API, database-backed health endpoint, OpenAPI route, Celery wiring, production security defaults, and database test configuration. `manage.py check --settings=config.settings.test` and the health API database test pass. PostgreSQL migrations and stack startup will be checked with Compose after frontend entry points exist.
