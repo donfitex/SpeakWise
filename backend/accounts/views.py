@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.middleware.csrf import get_token
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -59,17 +59,25 @@ def register(request):
     csrf_check(request)
     data = RegisterSerializer(data=request.data)
     data.is_valid(raise_exception=True)
-    with transaction.atomic():
-        user = get_user_model().objects.create_user(
-            username=data.validated_data["username"],
-            email=data.validated_data["email"],
-            password=data.validated_data["password"],
-        )
-        profile = LearnerProfile.objects.create(
-            user=user, display_name=data.validated_data["display_name"]
-        )
+    try:
+        with transaction.atomic():
+            user = get_user_model().objects.create_user(
+                username=data.validated_data["username"],
+                email=data.validated_data["email"],
+                password=data.validated_data["password"],
+            )
+            profile = LearnerProfile.objects.create(
+                user=user, display_name=data.validated_data["display_name"]
+            )
+    except IntegrityError:
+        return Response({"detail": "This username is unavailable."}, status=400)
     login(request, user)
     return Response(ProfileSerializer(profile).data, status=201)
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150)
+    password = serializers.CharField(max_length=128, write_only=True)
 
 
 @api_view(["POST"])
@@ -77,9 +85,9 @@ def register(request):
 @throttle_classes([AuthThrottle])
 def sign_in(request):
     csrf_check(request)
-    user = authenticate(
-        request, username=request.data.get("username"), password=request.data.get("password")
-    )
+    credentials = LoginSerializer(data=request.data)
+    credentials.is_valid(raise_exception=True)
+    user = authenticate(request, **credentials.validated_data)
     if user is None:
         return Response({"detail": "Check your username and password."}, status=400)
     login(request, user)
@@ -158,11 +166,11 @@ def password_reset(request):
 @throttle_classes([AuthThrottle])
 def reset_confirm(request):
     csrf_check(request)
+    uid = serializers.CharField(max_length=128).run_validation(request.data.get("uid"))
+    token = serializers.CharField(max_length=128).run_validation(request.data.get("token"))
     try:
-        user = get_user_model().objects.get(
-            pk=urlsafe_base64_decode(request.data.get("uid", "")).decode()
-        )
-        if not default_token_generator.check_token(user, request.data.get("token", "")):
+        user = get_user_model().objects.get(pk=urlsafe_base64_decode(uid).decode())
+        if not default_token_generator.check_token(user, token):
             raise ValueError
         password = serializers.CharField(max_length=128).run_validation(
             request.data.get("password")
@@ -190,8 +198,11 @@ def data_controls(request):
 
     profile = LearnerProfile.objects.get(user=request.user)
     if request.method == "DELETE":
+        password = serializers.CharField(max_length=128).run_validation(
+            request.data.get("password")
+        )
         if (
-            not request.user.check_password(request.data.get("password", ""))
+            not request.user.check_password(password)
             or request.data.get("confirmation") != "DELETE"
         ):
             return Response({"detail": "Enter your password and DELETE to confirm."}, status=400)

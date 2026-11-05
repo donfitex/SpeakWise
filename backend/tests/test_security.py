@@ -112,3 +112,25 @@ def test_cross_user_feedback_reports_denied():
         c.post(f"/api/v1/assessments/{result.id}/report/", {"reason": "Please review"}).status_code
         == 201
     )
+
+
+@pytest.mark.django_db
+def test_malformed_auth_payloads_return_validation_errors():
+    c = APIClient()
+    assert c.post("/api/v1/auth/login/", [], format="json").status_code == 400
+    assert (
+        c.post(
+            "/api/v1/auth/login/",
+            {"username": "x", "password": {"unexpected": "object"}},
+            format="json",
+        ).status_code
+        == 400
+    )
+    assert (
+        c.post(
+            "/api/v1/auth/password-reset/confirm/",
+            {"uid": [], "token": {}, "password": "sample"},
+            format="json",
+        ).status_code
+        == 400
+    )

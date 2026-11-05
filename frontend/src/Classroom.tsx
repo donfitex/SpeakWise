@@ -1,7 +1,7 @@
 import { PronunciationCues } from "./PronunciationCues";
 import { ModelVoice } from "./ModelVoice";
 import { SpeechPractice } from "./SpeechPractice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "./api";
 export type Activity = {
@@ -135,6 +135,11 @@ export function Courses() {
 export function Classroom() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const pendingAnswer = useRef<{
+    activity: string;
+    answer: string;
+    key: string;
+  } | null>(null);
   const [session, setSession] = useState<Session | null>(null),
     [answer, setAnswer] = useState(""),
     [error, setError] = useState(""),
@@ -157,6 +162,15 @@ export function Classroom() {
     if (!session?.activity) return;
     setBusy(true);
     setError("");
+    if (
+      pendingAnswer.current?.activity !== session.activity.id ||
+      pendingAnswer.current.answer !== answer
+    )
+      pendingAnswer.current = {
+        activity: session.activity.id,
+        answer,
+        key: crypto.randomUUID(),
+      };
     try {
       const data = await api<{
         session: Session;
@@ -166,9 +180,10 @@ export function Classroom() {
         body: JSON.stringify({
           activity_id: session.activity.id,
           answer,
-          request_id: crypto.randomUUID(),
+          request_id: pendingAnswer.current!.key,
         }),
       });
+      pendingAnswer.current = null;
       setSession(data.session);
       setFeedback(data.attempt.result.feedback);
       if (data.attempt.result.correct) {
