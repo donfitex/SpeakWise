@@ -47,3 +47,7 @@ Added prerequisite checks, published-version access, persisted owner-only sessio
 ## Phase 10 — Text-based classroom teacher
 
 Connected the course map to saved sessions and added scripted teacher explanation, one-at-a-time prompts, contextual hints, feedback, retry, and persisted teacher/learner turns. Six backend tests pass with turn persistence and no duplicate turns on replay; frontend lint/build pass. This is a deterministic scripted teacher, not an enabled language-model conversation service.
+
+## Phase 11 — Core English activities
+
+Added task-specific guidance and evidence for grammar, vocabulary, listening-with-caption, reading, sentence building, controlled writing, and typed speaking practice. Thirteen backend tests pass, including each activity type, normalization, positive reference matching, and retry guidance. Open-ended writing and actual listening/speaking proficiency grading are not inferred from controlled text matching.

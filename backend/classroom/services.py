@@ -11,6 +11,17 @@ def normalize(text):
     return re.sub(r"[^\w\s]", "", unicodedata.normalize("NFKC", text).casefold()).strip().split()
 
 
+ACTIVITY_HELP = {
+    "grammar": "Check the subject and verb in the model.",
+    "vocabulary": "Compare the meaning of the word with the example.",
+    "listening": "Replay the model or read its caption, then find the key detail.",
+    "reading": "Find the part of the text that supports your answer.",
+    "sentence-building": "Compare the word order with the model sentence.",
+    "writing": "This controlled exercise checks a model response; other valid wording may need human review.",
+    "speaking": "Typed practice checks words only. Pronunciation has not been evaluated.",
+}
+
+
 def evaluate(activity, answer):
     correct = any(normalize(answer) == normalize(reference) for reference in activity.answers)
     return {
@@ -23,6 +34,9 @@ def evaluate(activity, answer):
         "rubric_version": activity.rubric.version,
         "scores": {"task-completion": 5 if correct else 1},
         "pronunciation_evaluated": False,
+        "activity_type": activity.kind,
+        "next_step": ACTIVITY_HELP[activity.kind],
+        "reference": activity.example,
     }
 
 
