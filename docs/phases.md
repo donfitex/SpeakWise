@@ -19,3 +19,7 @@ Added Compose services, health checks, persistent private volumes, Dockerfiles w
 ## Phase 03 — Backend foundation
 
 Added Django settings split, session-authenticated DRF defaults, versioned API, database-backed health endpoint, OpenAPI route, Celery wiring, production security defaults, and database test configuration. `manage.py check --settings=config.settings.test` and the health API database test pass. PostgreSQL migrations and stack startup will be checked with Compose after frontend entry points exist.
+
+## Phase 04 — Frontend foundation
+
+Added strict TypeScript/Vite entry points, responsive design tokens, semantic navigation, skip link, route fallbacks, and a CSRF-aware API client with offline/error handling. `npm run build` passes. Account/classroom/progress routes are explicitly labelled placeholders for subsequent phases. Browser layout validation is deferred to journey testing.
