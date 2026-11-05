@@ -1,0 +1,31 @@
+name: Render image
+on:
+  push:
+    branches: [codex/render-deployment]
+  pull_request:
+    paths:
+      - deploy/render/**
+      - backend/config/settings/render.py
+      - render.yaml
+      - .github/workflows/render-image.yml
+permissions:
+  contents: read
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build deployment image
+        run: docker build -f deploy/render/Dockerfile -t speakwise-render-check .
+      - name: Check production settings without external credentials
+        run: |
+          docker run --rm \
+            -e DJANGO_SECRET_KEY=ci-only-synthetic-secret-never-use-in-production-0123456789abcdef \
+            -e DATABASE_URL=sqlite:///:memory: \
+            -e RENDER_EXTERNAL_HOSTNAME=speakwise-ci.onrender.com \
+            -e EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend \
+            -e EMAIL_HOST=smtp.example.com \
+            -e EMAIL_HOST_USER=synthetic \
+            -e EMAIL_HOST_PASSWORD=synthetic \
+            -e DEFAULT_FROM_EMAIL=synthetic@example.com \
+            speakwise-render-check python backend/manage.py check --deploy --fail-level WARNING

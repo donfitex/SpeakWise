@@ -1,0 +1,21 @@
+# Free typed-learning pilot. No disk, Redis, or always-on workers.
+services:
+  - type: web
+    name: speakwise
+    runtime: docker
+    plan: free
+    region: ohio
+    dockerfilePath: ./deploy/render/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health/
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.render
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DATABASE_URL
+        sync: false
+      - key: SEED_DEMO
+        value: "true"

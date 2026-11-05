@@ -1,0 +1,30 @@
+{
+  auto_https off
+  admin off
+}
+:{$PORT:10000} {
+  encode zstd gzip
+  request_body {
+    max_size 3MB
+  }
+  header {
+    X-Content-Type-Options nosniff
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Referrer-Policy strict-origin-when-cross-origin
+    Permissions-Policy "microphone=(self), camera=(), geolocation=()"
+    Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob:; connect-src 'self'; font-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'"
+    -Server
+  }
+  @backend path /api/* /admin* /static/*
+  handle @backend {
+    reverse_proxy 127.0.0.1:8000 {
+      # Only Render's TLS ingress can reach this public container port.
+      header_up X-Forwarded-Proto https
+    }
+  }
+  handle {
+    root * /srv
+    try_files {path} /index.html
+    file_server
+  }
+}
