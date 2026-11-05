@@ -1,6 +1,7 @@
 import re
 import unicodedata
 
+from curriculum.visuals import visual_cues
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
@@ -95,7 +96,7 @@ def representation(session):
             "example": current.example,
             "hint": current.hint,
             "options": current.options,
-            "cues": current.cues,
+            "cues": current.cues or visual_cues(current.example),
         }
         if current
         else None,

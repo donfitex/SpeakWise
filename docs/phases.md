@@ -71,3 +71,7 @@ Added versioned assessment evidence, rubric-bound dimension validation, uncertai
 ## Phase 16 — Audio teacher and model examples
 
 Added user-triggered browser model speech with caption, local-English-voice preference, optional disclosed online voices, normal/slow playback, stop, voice selection, and text fallback. Three frontend behavior tests plus lint/build pass. Model phrases only are synthesized; real browser voice availability varies and no server TTS provider is configured.
+
+## Phase 17 — Visual pronunciation tools
+
+Added reference-specific syllable/stress blocks, pause/intonation guidance, and a simplified closed-lip /m/ illustration with text alternatives. Twenty-one backend tests and frontend lint/build pass. Cues are visibly labelled illustrative and unreviewed; qualified English-language review is still required to satisfy the educational-review acceptance gate.

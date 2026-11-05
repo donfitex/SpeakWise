@@ -1,3 +1,4 @@
+import { PronunciationCues } from "./PronunciationCues";
 import { ModelVoice } from "./ModelVoice";
 import { SpeechPractice } from "./SpeechPractice";
 import { useEffect, useState } from "react";
@@ -229,6 +230,7 @@ export function Classroom() {
                       key={session.activity.id}
                       text={session.activity.example}
                     />
+                    <PronunciationCues cues={session.activity.cues} />
                     {session.activity.kind === "speaking" && (
                       <SpeechPractice
                         key={session.activity.id}
