@@ -38,7 +38,9 @@ def representation(job):
 def upload(request, pk):
     if not getattr(settings, "SPEECH_UPLOADS_ENABLED", True):
         return Response(
-            {"detail": "Audio processing is unavailable in this free pilot. Please use typed practice."},
+            {
+                "detail": "Audio processing is unavailable in this free pilot. Please use typed practice."
+            },
             status=503,
         )
     session = get_object_or_404(
