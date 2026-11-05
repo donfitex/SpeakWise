@@ -218,3 +218,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Frontend dependencies and local configuration
+node_modules/
+*.tsbuildinfo
+.env.*
+!.env.example
+coverage/
+playwright-report/
+test-results/
+# Private recordings and local media
+media/
+recordings/
