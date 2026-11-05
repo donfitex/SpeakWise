@@ -58,3 +58,8 @@ urlpatterns += [
     path("api/v1/learners/me/progress/", progress.progress),
     path("api/v1/learners/me/recommendations/", progress.recommendations),
 ]
+
+urlpatterns += [
+    path("api/v1/learners/me/history/", progress.history),
+    path("api/v1/learners/me/summary/", progress.summary),
+]

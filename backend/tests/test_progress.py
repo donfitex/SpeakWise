@@ -35,3 +35,26 @@ def test_progress_valid_evidence_and_repeatable_recommendation():
     a = speaking.activities.last()
     submit_answer(s, a.id, a.answers[0], uuid.uuid4())
     assert not SkillProgress.objects.filter(learner=p, skill__slug="speaking").exists()
+
+
+@pytest.mark.django_db
+def test_dashboard_is_owner_scoped_and_history_paginated():
+    from rest_framework.test import APIClient
+
+    call_command("seed_demo")
+    u = get_user_model().objects.create_user(username="journal")
+    p = LearnerProfile.objects.create(user=u, display_name="Demo")
+    version = LessonVersion.objects.filter(lesson__unit__level="A1").first()
+    session = LessonSession.objects.create(learner=p, lesson_version=version)
+    a = version.activities.first()
+    submit_answer(session, a.id, "wrong", uuid.uuid4())
+    c = APIClient()
+    c.force_authenticate(u)
+    assert c.get("/api/v1/learners/me/summary/").json()["practice_attempts"] == 1
+    history = c.get("/api/v1/learners/me/history/").json()
+    assert history["count"] == 1 and history["results"][0]["assessment_id"]
+    other = get_user_model().objects.create_user(username="private")
+    LearnerProfile.objects.create(user=other, display_name="Other")
+    c.force_authenticate(other)
+    assert c.get("/api/v1/learners/me/history/").json()["count"] == 0
+    assert c.get("/api/v1/learners/me/summary/").json()["practice_attempts"] == 0

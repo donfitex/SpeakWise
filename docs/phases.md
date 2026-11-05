@@ -79,3 +79,7 @@ Added reference-specific syllable/stress blocks, pause/intonation guidance, and 
 ## Phase 18 — Adaptive feedback and learning plan
 
 Added per-skill recent controlled-task estimates, evidence counts, 1/3/7-day review rules, reproducible recommendation reasons, preferred-level selection, and repeat review sessions. Twenty-two backend tests pass; reprocessing evidence does not inflate counts, and typed speech/listening does not claim mastery. Estimates are advisory and are not a CEFR qualification or calibrated speech score.
+
+## Phase 19 — Dashboard and learning history
+
+Added authenticated home/progress dashboard, completed lesson and attempt counts, actual recorded practice duration, resume links, recommendation reasons, skill evidence/review dates, paginated history, and feedback reporting UI. Twenty-three backend tests and frontend lint/build pass. No invented streak, typed practice time, or single mastery score is shown. Owner isolation and history pagination are tested.

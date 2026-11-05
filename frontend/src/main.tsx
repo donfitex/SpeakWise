@@ -1,3 +1,6 @@
+import { Dashboard } from "./Dashboard";
+import { useState, useEffect } from "react";
+import { api } from "./api";
 import { Classroom, Courses } from "./Classroom";
 import { Placement } from "./Placement";
 import { Account } from "./Account";
@@ -7,6 +10,13 @@ import { BrowserRouter, NavLink, Route, Routes, Link } from "react-router-dom";
 import "./styles.css";
 
 function Home() {
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    api("/learners/me/")
+      .then(() => setSignedIn(true))
+      .catch(() => {});
+  }, []);
+  if (signedIn) return <Dashboard />;
   return (
     <>
       <p className="eyebrow">A LITTLE PRACTICE. A CLEARER VOICE.</p>
@@ -77,18 +87,7 @@ function App() {
           <Route path="/placement" element={<Placement />} />
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
-          <Route
-            path="/progress"
-            element={
-              <div className="card">
-                <h1>A little better, every day.</h1>
-                <p>
-                  Your learning history will live here once you complete your
-                  first lesson.
-                </p>
-              </div>
-            }
-          />
+          <Route path="/progress" element={<Dashboard />} />
           <Route path="/account" element={<Account />} />
           <Route
             path="*"
