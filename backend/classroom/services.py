@@ -4,7 +4,7 @@ import unicodedata
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
-from .models import ActivityAttempt
+from .models import ActivityAttempt, TeacherTurn
 
 
 def normalize(text):
@@ -42,6 +42,12 @@ def submit_answer(session, activity_id, answer, request_id):
     attempt = ActivityAttempt.objects.create(
         session=session, activity=activity, request_id=request_id, answer=answer, result=result
     )
+    TeacherTurn.objects.create(
+        session=session, speaker="learner", content=answer, activity=activity
+    )
+    TeacherTurn.objects.create(
+        session=session, speaker="teacher", content=result["feedback"], activity=activity
+    )
     if result["correct"]:
         session.position += 1
         if session.position == len(activities):
@@ -60,6 +66,10 @@ def representation(session):
         "explanation": session.lesson_version.explanation,
         "position": session.position,
         "total": len(activities),
+        "turns": [
+            {"speaker": t.speaker, "content": t.content}
+            for t in session.turns.order_by("created_at", "id")[:100]
+        ],
         "completed": bool(session.completed_at),
         "activity": {
             "id": str(current.id),

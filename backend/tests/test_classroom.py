@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 from accounts.models import LearnerProfile
-from classroom.models import ActivityAttempt, LessonSession
+from classroom.models import ActivityAttempt, LessonSession, TeacherTurn
 from curriculum.models import LessonVersion
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
@@ -42,6 +42,8 @@ def test_resume_retry_completion_and_idempotency(learner):
         "completed"
     ]
     assert LessonSession.objects.count() == 1
+    assert TeacherTurn.objects.count() == 6
+    assert learner.get(f"/api/v1/lesson-sessions/{pk}/").json()["turns"][-1]["speaker"] == "teacher"
     other = APIClient()
     other.force_authenticate(get_user_model().objects.create_user(username="other"))
     assert other.get(f"/api/v1/lesson-sessions/{pk}/").status_code == 404

@@ -43,3 +43,7 @@ Added goals/level preferences, a four-question text diagnostic with server-contr
 ## Phase 09 — Lesson session engine
 
 Added prerequisite checks, published-version access, persisted owner-only sessions, ordered activities, retry without advancement, idempotent answer keys, and completion timestamps. Six tests pass, including resume, duplicate submission, key misuse, and cross-user denial. Controlled text matching measures task completion only; no pronunciation or open-ended proficiency claims are made.
+
+## Phase 10 — Text-based classroom teacher
+
+Connected the course map to saved sessions and added scripted teacher explanation, one-at-a-time prompts, contextual hints, feedback, retry, and persisted teacher/learner turns. Six backend tests pass with turn persistence and no duplicate turns on replay; frontend lint/build pass. This is a deterministic scripted teacher, not an enabled language-model conversation service.

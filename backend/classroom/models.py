@@ -28,3 +28,12 @@ class ActivityAttempt(Record):
         constraints = [
             models.UniqueConstraint(fields=["session", "request_id"], name="attempt_request_unique")
         ]
+
+
+class TeacherTurn(Record):
+    session = models.ForeignKey(LessonSession, on_delete=models.CASCADE, related_name="turns")
+    speaker = models.CharField(
+        max_length=10, choices=[("teacher", "Teacher"), ("learner", "Learner")]
+    )
+    content = models.TextField()
+    activity = models.ForeignKey(Activity, on_delete=models.PROTECT, null=True, blank=True)

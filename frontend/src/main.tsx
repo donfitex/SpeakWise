@@ -1,3 +1,4 @@
+import { Classroom, Courses } from "./Classroom";
 import { Placement } from "./Placement";
 import { Account } from "./Account";
 import React from "react";
@@ -50,26 +51,6 @@ function Home() {
     </>
   );
 }
-function Courses() {
-  return (
-    <>
-      <p className="eyebrow">YOUR LEARNING PATH</p>
-      <h1>
-        Small lessons.
-        <br />
-        Real progress.
-      </h1>
-      <div className="card">
-        <h2>Your classroom is taking shape</h2>
-        <p>
-          Our first curriculum will cover everyday English from pre-A1 through
-          B1. Published lessons will appear here.
-        </p>
-        <Link to="/">Return home</Link>
-      </div>
-    </>
-  );
-}
 function App() {
   return (
     <BrowserRouter>
@@ -92,6 +73,7 @@ function App() {
       </header>
       <main id="main" tabIndex={-1}>
         <Routes>
+          <Route path="/classroom/:id" element={<Classroom />} />
           <Route path="/placement" element={<Placement />} />
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
