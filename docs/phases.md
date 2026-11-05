@@ -91,3 +91,7 @@ Added staff administration, draft cloning, read-only submitted/published version
 ## Phase 21 — Privacy, safety, and accessibility hardening
 
 Added consent revocation that stops/deletes pending audio, owner data export, password-confirmed account deletion with file cleanup, 90-day inactive-session purge, scheduler service, shared production throttling, and privacy/threat-model documentation. Twenty-five backend tests plus three frontend tests and frontend lint/build pass. Browser accessibility checks follow in Phase 22; deployment backups, jurisdictional review, and verified email/edge-abuse controls remain release gates.
+
+## Phase 22 — Integration tests and pilot quality
+
+Added real Chromium journey/axe desktop/mobile/keyboard checks, recording lifecycle test, PostgreSQL test option, live worker smoke command, four-user concurrent typed smoke, and hosted journey CI configuration. 28 backend tests, four frontend tests, two browser tests, and live worker/concurrency checks pass. Browser testing found and fixed proxy Host handling and reused form fields. See validation.md. Diverse consented speech evaluation, scoring calibration, educator review, and full manual accessibility remain open pilot-release gates.

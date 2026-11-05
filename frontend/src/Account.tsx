@@ -94,7 +94,7 @@ export function Account() {
             Find a starting level with a short placement
           </Link>
         </p>
-        <form onSubmit={submit}>
+        <form key={profile ? "preferences" : mode} onSubmit={submit}>
           {profile ? (
             <>
               <label>
