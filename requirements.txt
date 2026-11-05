@@ -11,3 +11,5 @@ gunicorn>=23,<24
 whitenoise>=6.9,<7
 
 openai>=2,<3
+# Free offline English transcription; compatible binary wheel on Python 3.12.
+pocketsphinx>=5.0.4,<5.1

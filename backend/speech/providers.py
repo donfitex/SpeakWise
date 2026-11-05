@@ -66,6 +66,67 @@ class MockTranscriber:
         return Transcript("Synthetic test transcript", "mock", simulated=True)
 
 
+class OfflineTranscriber:
+    """Free bundled US-English ASR; approximate text only, never pronunciation grading."""
+
+    def transcribe(self, audio):
+        import array
+        import os
+        import subprocess
+
+        from pocketsphinx import Decoder
+
+        payload = audio.read(2 * 1024 * 1024 + 1)
+        if len(payload) > 2 * 1024 * 1024:
+            raise ProviderUnavailable("Recording exceeds the processing limit.")
+        try:
+            pcm = subprocess.run(
+                [
+                    "ffmpeg",
+                    "-v",
+                    "error",
+                    "-nostdin",
+                    "-i",
+                    "pipe:0",
+                    "-vn",
+                    "-t",
+                    "31",
+                    "-f",
+                    "s16le",
+                    "-acodec",
+                    "pcm_s16le",
+                    "-ac",
+                    "1",
+                    "-ar",
+                    "16000",
+                    "pipe:1",
+                ],
+                input=payload,
+                capture_output=True,
+                check=True,
+                timeout=15,
+            ).stdout
+            samples = array.array("h", pcm)
+            if not samples or max(abs(n) for n in samples) < 128:
+                raise ProviderUnavailable(
+                    "The recording is too quiet. Try again or type your answer."
+                )
+            decoder = Decoder(logfn=os.devnull)
+            decoder.start_utt()
+            decoder.process_raw(pcm, False, True)
+            decoder.end_utt()
+            hypothesis = decoder.hyp()
+            if not hypothesis or not hypothesis.hypstr.strip():
+                raise ProviderUnavailable(
+                    "No clear words were found. Try again or type your answer."
+                )
+            return Transcript(hypothesis.hypstr[:4000], "pocketsphinx")
+        except (subprocess.SubprocessError, OSError) as exc:
+            raise ProviderUnavailable(
+                "Offline transcription could not finish. Please use typed practice."
+            ) from exc
+
+
 class OpenAITranscriber:
     def transcribe(self, audio):
         from openai import OpenAI
@@ -85,6 +146,8 @@ class OpenAITranscriber:
 
 
 def transcriber():
+    if settings.SPEECH_PROVIDER == "pocketsphinx":
+        return OfflineTranscriber()
     if settings.SPEECH_PROVIDER == "openai":
         return OpenAITranscriber()
     if settings.SPEECH_PROVIDER == "mock" and settings.ALLOW_MOCK_SPEECH:

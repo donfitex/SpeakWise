@@ -87,7 +87,12 @@ def process_speech(pk):
                 "scores": {},
                 "confidence": evaluation.confidence,
                 "evidence": evaluation.evidence,
-                "feedback": "Review the transcript, then use typed practice to continue. Pronunciation was not evaluated.",
+                "feedback": (
+                    "Offline English transcription is approximate and can get words wrong. "
+                    if transcript.provider == "pocketsphinx"
+                    else ""
+                )
+                + "Review the transcript, then use typed practice to continue. Pronunciation was not evaluated.",
             }
             remove_audio(job)
             job.save()
