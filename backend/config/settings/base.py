@@ -67,6 +67,10 @@ if env("DATABASE_URL", default=""):
     DATABASES = {"default": env.db()}
     if DATABASES["default"].get("HOST", "").endswith(".neon.tech"):
         DATABASES["default"].setdefault("OPTIONS", {})["sslmode"] = "verify-full"
+        DATABASES["default"]["OPTIONS"].setdefault(
+            "sslrootcert",
+            env("DATABASE_SSL_ROOT_CERT", default="/etc/ssl/certs/ca-certificates.crt"),
+        )
         DATABASES["default"]["CONN_MAX_AGE"] = 0
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
