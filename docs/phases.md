@@ -39,3 +39,7 @@ Added UUID course/unit/lesson/version/skill/activity/rubric models, draft visibi
 ## Phase 08 — Learner onboarding and placement
 
 Added goals/level preferences, a four-question text diagnostic with server-controlled sequencing, owner-only results, low-confidence evidence, and learner override. Five backend tests and frontend lint/build pass. Listening and speaking placement are explicitly unmeasured; the full multimodal diagnostic acceptance gate remains open pending reliable speech services and reviewed content.
+
+## Phase 09 — Lesson session engine
+
+Added prerequisite checks, published-version access, persisted owner-only sessions, ordered activities, retry without advancement, idempotent answer keys, and completion timestamps. Six tests pass, including resume, duplicate submission, key misuse, and cross-user denial. Controlled text matching measures task completion only; no pronunciation or open-ended proficiency claims are made.

@@ -1,4 +1,5 @@
 from accounts import views as accounts
+from classroom import views as classroom
 from core.views import health
 from curriculum import views as curriculum
 from django.contrib import admin
@@ -34,4 +35,10 @@ urlpatterns += [
     path("api/v1/placement-sessions/", placement.start),
     path("api/v1/placement-sessions/<uuid:pk>/answers/", placement.detail),
     path("api/v1/placement-sessions/<uuid:pk>/result/", placement.detail),
+]
+
+urlpatterns += [
+    path("api/v1/lesson-sessions/", classroom.start),
+    path("api/v1/lesson-sessions/<uuid:pk>/", classroom.detail),
+    path("api/v1/lesson-sessions/<uuid:pk>/turns/", classroom.answer),
 ]

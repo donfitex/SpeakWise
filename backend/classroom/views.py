@@ -1,0 +1,62 @@
+from accounts.models import LearnerProfile
+from curriculum.models import LessonVersion
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from .models import LessonSession
+from .services import representation, submit_answer
+
+
+@api_view(["POST"])
+@transaction.atomic
+def start(request):
+    pk = serializers.UUIDField().run_validation(request.data.get("lesson_version"))
+    version = get_object_or_404(
+        LessonVersion, pk=pk, status="published", lesson__unit__course__published=True
+    )
+    learner = LearnerProfile.objects.get(user=request.user)
+    required = set(version.lesson.prerequisites.values_list("id", flat=True))
+    completed = set(
+        LessonSession.objects.filter(learner=learner, completed_at__isnull=False).values_list(
+            "lesson_version__lesson_id", flat=True
+        )
+    )
+    if required - completed:
+        return Response({"detail": "Complete the prerequisite lesson first."}, status=403)
+    if not version.activities.exists():
+        return Response({"detail": "This lesson has no published activities."}, status=409)
+    session, created = LessonSession.objects.get_or_create(learner=learner, lesson_version=version)
+    return Response(representation(session), status=201 if created else 200)
+
+
+@api_view(["GET"])
+def detail(request, pk):
+    return Response(
+        representation(get_object_or_404(LessonSession, pk=pk, learner__user=request.user))
+    )
+
+
+class AnswerSerializer(serializers.Serializer):
+    activity_id = serializers.UUIDField()
+    answer = serializers.CharField(max_length=4000, trim_whitespace=True)
+    request_id = serializers.UUIDField()
+
+
+@api_view(["POST"])
+@transaction.atomic
+def answer(request, pk):
+    data = AnswerSerializer(data=request.data)
+    data.is_valid(raise_exception=True)
+    session = get_object_or_404(
+        LessonSession.objects.select_for_update(), pk=pk, learner__user=request.user
+    )
+    attempt = submit_answer(session, **data.validated_data)
+    return Response(
+        {
+            "session": representation(session),
+            "attempt": {"id": str(attempt.id), "result": attempt.result},
+        }
+    )

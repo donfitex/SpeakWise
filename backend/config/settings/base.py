@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "accounts",
     "curriculum",
     "placement",
+    "classroom",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
