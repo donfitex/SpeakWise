@@ -67,3 +67,7 @@ Added consent/ownership checks, private bounded uploads, idempotent jobs, worker
 ## Phase 15 — Pronunciation and elocution feedback
 
 Added versioned assessment evidence, rubric-bound dimension validation, uncertainty/mock suppression, and owner-only feedback reporting. Twenty backend tests pass; out-of-range/unknown dimensions are rejected and weak evidence never produces a score. No calibrated pronunciation evaluator exists, so pronunciation, stress, pace, and intonation scoring remain an explicit release gate; code cannot honestly establish scoring quality without reviewed recordings.
+
+## Phase 16 — Audio teacher and model examples
+
+Added user-triggered browser model speech with caption, local-English-voice preference, optional disclosed online voices, normal/slow playback, stop, voice selection, and text fallback. Three frontend behavior tests plus lint/build pass. Model phrases only are synthesized; real browser voice availability varies and no server TTS provider is configured.

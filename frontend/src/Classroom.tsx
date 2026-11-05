@@ -1,3 +1,4 @@
+import { ModelVoice } from "./ModelVoice";
 import { SpeechPractice } from "./SpeechPractice";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -224,9 +225,10 @@ export function Classroom() {
                       {session.activity.kind} · YOUR TURN
                     </p>
                     <h2>{session.activity.prompt}</h2>
-                    <p>
-                      Model: <strong>{session.activity.example}</strong>
-                    </p>
+                    <ModelVoice
+                      key={session.activity.id}
+                      text={session.activity.example}
+                    />
                     {session.activity.kind === "speaking" && (
                       <SpeechPractice
                         key={session.activity.id}
