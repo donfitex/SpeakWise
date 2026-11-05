@@ -1,0 +1,73 @@
+name: speakwise
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_DB: speakwise
+      POSTGRES_USER: speakwise
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U speakwise -d speakwise']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7-bookworm
+    command: [redis-server, --appendonly, 'yes']
+    volumes: [redis_data:/data]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      secrets: [system_ca]
+    env_file: .env
+    environment:
+      DATABASE_HOST: db
+      REDIS_URL: redis://redis:6379/0
+    volumes: [./backend:/app/backend, private_media:/app/private-media]
+    ports: ['127.0.0.1:8000:8000']
+    command: [sh, -c, 'python backend/manage.py migrate --noinput && python backend/manage.py runserver 0.0.0.0:8000']
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, python, -c, 'import urllib.request; urllib.request.urlopen("http://localhost:8000/api/v1/health/")']
+      interval: 10s
+      timeout: 5s
+      retries: 20
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      secrets: [system_ca]
+    env_file: .env
+    environment:
+      DATABASE_HOST: db
+      REDIS_URL: redis://redis:6379/0
+    volumes: [./backend:/app/backend, private_media:/app/private-media]
+    command: [celery, --workdir=backend, -A, config, worker, --loglevel=warning, --concurrency=2]
+    depends_on:
+      api: {condition: service_healthy}
+  frontend:
+    build:
+      context: frontend
+      secrets: [system_ca]
+    volumes: [./frontend:/app, frontend_modules:/app/node_modules]
+    ports: ['127.0.0.1:5173:5173']
+    command: [npm, run, dev, --, --host, 0.0.0.0]
+    depends_on:
+      api: {condition: service_healthy}
+volumes:
+  postgres_data:
+  redis_data:
+  private_media:
+  frontend_modules:
+secrets:
+  system_ca:
+    file: ${SYSTEM_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}

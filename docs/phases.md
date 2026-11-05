@@ -11,3 +11,7 @@ Acceptance: clean-checkout documentation describes scope, current dependency set
 Commit: `chore(scaffold): initialize speakwise project`.
 
 Next: Phase 02, local Docker Compose services. Service startup acceptance depends on the Django and frontend entry points introduced by Phases 03 and 04; record that dependency explicitly rather than claiming the full stack starts prematurely.
+
+## Phase 02 — Local developer environment
+
+Added Compose services, health checks, persistent private volumes, Dockerfiles with verified TLS trust, loopback port bindings, and startup documentation. `docker compose config --quiet` validates the configuration. Full application startup depends on Phases 03–04; the full-stack acceptance gate remains pending until then.
