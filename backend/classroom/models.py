@@ -12,7 +12,9 @@ class LessonSession(Record):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["learner", "lesson_version"], name="learner_lesson_session"
+                fields=["learner", "lesson_version"],
+                condition=models.Q(completed_at__isnull=True),
+                name="learner_active_lesson_session",
             )
         ]
 

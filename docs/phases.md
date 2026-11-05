@@ -75,3 +75,7 @@ Added user-triggered browser model speech with caption, local-English-voice pref
 ## Phase 17 — Visual pronunciation tools
 
 Added reference-specific syllable/stress blocks, pause/intonation guidance, and a simplified closed-lip /m/ illustration with text alternatives. Twenty-one backend tests and frontend lint/build pass. Cues are visibly labelled illustrative and unreviewed; qualified English-language review is still required to satisfy the educational-review acceptance gate.
+
+## Phase 18 — Adaptive feedback and learning plan
+
+Added per-skill recent controlled-task estimates, evidence counts, 1/3/7-day review rules, reproducible recommendation reasons, preferred-level selection, and repeat review sessions. Twenty-two backend tests pass; reprocessing evidence does not inflate counts, and typed speech/listening does not claim mastery. Estimates are advisory and are not a CEFR qualification or calibrated speech score.

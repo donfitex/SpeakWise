@@ -7,6 +7,7 @@ from django.contrib import admin
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from placement import views as placement
+from progress import views as progress
 from speech import views as speech
 
 urlpatterns = [
@@ -52,3 +53,8 @@ urlpatterns += [
 ]
 
 urlpatterns += [path("api/v1/assessments/<uuid:pk>/report/", assessment.report)]
+
+urlpatterns += [
+    path("api/v1/learners/me/progress/", progress.progress),
+    path("api/v1/learners/me/recommendations/", progress.recommendations),
+]

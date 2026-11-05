@@ -60,6 +60,9 @@ def submit_answer(session, activity_id, answer, request_id):
     from assessment.services import record_text
 
     record_text(attempt)
+    from progress.services import update_from_attempt
+
+    update_from_attempt(attempt)
     TeacherTurn.objects.create(
         session=session, speaker="learner", content=answer, activity=activity
     )

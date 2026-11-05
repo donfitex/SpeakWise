@@ -17,7 +17,7 @@ def start(request):
     version = get_object_or_404(
         LessonVersion, pk=pk, status="published", lesson__unit__course__published=True
     )
-    learner = LearnerProfile.objects.get(user=request.user)
+    learner = LearnerProfile.objects.select_for_update().get(user=request.user)
     required = set(version.lesson.prerequisites.values_list("id", flat=True))
     completed = set(
         LessonSession.objects.filter(learner=learner, completed_at__isnull=False).values_list(
@@ -28,7 +28,21 @@ def start(request):
         return Response({"detail": "Complete the prerequisite lesson first."}, status=403)
     if not version.activities.exists():
         return Response({"detail": "This lesson has no published activities."}, status=409)
-    session, created = LessonSession.objects.get_or_create(learner=learner, lesson_version=version)
+    review = serializers.BooleanField(default=False).run_validation(
+        request.data.get("review", False)
+    )
+    session = LessonSession.objects.filter(
+        learner=learner, lesson_version=version, completed_at__isnull=True
+    ).first()
+    if not session and not review:
+        session = (
+            LessonSession.objects.filter(learner=learner, lesson_version=version)
+            .order_by("-created_at")
+            .first()
+        )
+    created = not session
+    if not session:
+        session = LessonSession.objects.create(learner=learner, lesson_version=version)
     return Response(representation(session), status=201 if created else 200)
 
 
