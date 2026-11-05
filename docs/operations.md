@@ -24,7 +24,7 @@ Raw audio normally disappears after processing and expires in ten minutes. A sin
 
 Health checks query PostgreSQL; worker ping checks Redis/Celery. Monitor HTTP error rate, latency, database connections, queue depth, worker restarts, disk usage, and scheduler heartbeat without logging payloads. Default Gunicorn access logging is disabled; configure redacted log rotation/retention at the host. Treat logs as sensitive. Debug mode must stay off.
 
-To disable speech, set SPEECH_PROVIDER=disabled and recreate API/worker/scheduler; typed lessons remain available. Optional transcription is paid: set provider budget/rate alerts and an account spending cap before enabling it. No pronunciation calibration or release-quality speech score is provided. Redis uses noeviction so memory pressure fails visibly rather than silently dropping jobs; alert and drain/recover deliberately.
+To disable speech, set SPEECH_PROVIDER=disabled and recreate API/worker/scheduler; typed lessons remain available. Free offline transcription can be enabled with SPEECH_PROVIDER=pocketsphinx; review its recognition limits first. Optional OpenAI transcription is paid: set provider budget/rate alerts and an account spending cap before enabling it. No pronunciation calibration or release-quality speech score is provided. Redis uses noeviction so memory pressure fails visibly rather than silently dropping jobs; alert and drain/recover deliberately.
 
 For incidents: restrict access, disable affected providers/endpoints, preserve minimal redacted evidence, rotate exposed credentials, assess learner impact, and use a verified private reporting channel. Contact and legal notification obligations must be assigned before launch.
 

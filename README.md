@@ -1,44 +1,67 @@
 # SpeakWise AI
 
-A structured English, pronunciation, diction, and elocution teacher. Lessons explain a concept, demonstrate it, invite practice, offer evidence-based feedback, and let the learner retry.
+A guided English classroom: understand a small concept, practise it, receive useful feedback, retry, and see a clear next step.
 
-**Status:** Phase 01 foundation. Dependency installation is verified; the application is not implemented yet. See the [master plan](docs/master-plan.md) and [phase record](docs/phases.md).
+**Status:** working local advisory pilot, implemented through the portfolio/documentation phase. Public release is blocked on live Neon/deployment configuration, verified email, educational review, and speech calibration. See the [phase-by-phase status](docs/release-status.md); reaching a phase's code does not mean every release gate is satisfied.
 
-## First release
+![SpeakWise learning dashboard with fictional sample data](docs/screenshots/dashboard-desktop.png)
 
-Adult and older-teen self-study learners, pre-A1 through B1, using a small complete curriculum. Initial personas: a beginner practising everyday exchanges, an intermediate learner preparing clear introductions, and a learner refining a chosen pronunciation target. Child accounts, live group calls, exam certification, and B2–C2 coverage are later work.
+## What works
 
-Typed participation, captions, replay, keyboard access, and respectful feedback are core requirements. A transcript alone must never be used to diagnose pronunciation.
+- Session-based accounts, goal/level preferences, text placement with explicit confidence and learner override.
+- Versioned sample curriculum across pre-A1–B1, scripted teacher, contextual hints, controlled exercises, saved sessions, retry, and review.
+- Optional bounded microphone capture, local playback, private asynchronous jobs, transcript/status flow, and safe disabled-provider fallback.
+- Browser model speech with captions, slow playback, local voice preference, and disclosed opt-in online voices.
+- Advisory progress by skill, evidence counts, review dates, explainable recommendations, and paginated history.
+- Staff authoring/review/publication, separate reviewer, immutable historical versions, and feedback reporting.
+- Consent withdrawal, data export, speech-result/account deletion, and retention cleanup.
 
-## Development setup today
+Pronunciation scores are **not enabled**. Text matching measures controlled tasks, not overall proficiency; ASR is never treated as phoneme evidence. Visual pronunciation cues and sample lessons await qualified educational review. The initial audience is self-attesting learners aged 16+, with a small sample track rather than complete CEFR coverage. Child accounts and live group classrooms are out of scope.
 
-Prerequisites verified in the cloud: Python 3.12 and Node 24 with npm 11. From the repository root:
+## Run locally
+
+Prerequisites: Python 3.12, Node 24/npm, Docker Engine with Compose v2. For host-side speech tests, install FFmpeg through your OS package manager. The containers include it.
 
 ```sh
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -r requirements-dev.txt
-python -m pip check
-cd frontend
-npm install --package-lock=false
-npm ls --depth=0
+python3 scripts/configure_local.py
+make dev
 ```
 
-These commands install dependencies only. Django settings/manage.py, frontend source/tsconfig.json, and tests are planned in later phases. `npm run build` currently fails because tsconfig.json is missing; pytest currently collects no tests. Lockfiles and clean-install CI are scheduled for Phase 05. Until then, version ranges can resolve differently over time.
+This preserves an existing `.env`, creates private random local credentials only when needed, builds six services, applies migrations, and seeds fictional content. Open your local frontend on port 5173. API health is `/api/v1/health/` on port 8000; self-hosted API docs are `/api/v1/docs/` and schema `/api/v1/schema/`. No shared demo password is shipped; create an account through the UI.
 
-Copy `.env.example` to `.env` when configuring the upcoming local stack. Its variables are a planned configuration contract, not functioning application settings yet. Never put credentials in source or frontend environment variables. Docker Compose arrives in Phase 02, backend startup in Phase 03, and frontend startup in Phase 04.
+```sh
+make install       # locked host Python/frontend development dependencies
+make check         # lint, format, migrations, schema, tests, strict types, build
+cd frontend
+CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e
+```
 
-## Repository map
+For Playwright without system Chromium, install its browser with `npx playwright install chromium` and omit CHROMIUM_PATH. The browser runner reuses local services or starts host services; ensure the database is configured/migrated first. `make stop` stops local containers while preserving volumes. See [development](docs/development.md) for full instructions.
 
-- `backend/`: reserved for the Django modular monolith.
-- `frontend/`: React/TypeScript dependency manifest; interface implementation follows.
-- `requirements*.txt`: backend runtime and development dependencies.
-- `docs/`: product plan, decisions, delivery evidence, and policies.
+## Neon and deployment
 
-## Cost and data policy
+**Neon PostgreSQL is the selected hosted database.** Set its connection URL securely as DATABASE_URL; Neon connections enforce full TLS verification. No live Neon credentials or connection have been supplied. Local PostgreSQL remains the offline/CI fallback. See [Neon setup](docs/neon.md) and [production operations](docs/operations.md).
 
-Prefer free, open-source dependencies and local scripted teaching. Paid speech/AI services will be optional adapters, disabled without configuration; no paid account is needed for the planned local demonstration. Browser speech capabilities may vary and can use browser-vendor services; disclose that before enabling them. Do not promise free hosted production infrastructure.
+The production stack builds a static frontend served by Caddy with HTTPS and a private Gunicorn API, worker, scheduler, and Redis. A verified local TLS staging smoke passed against local PostgreSQL. Public hosting, actual Neon access, SMTP delivery, private production storage/backups, and restore still require operator configuration. No paid resource or cloud-environment publication was performed.
 
-Use synthetic lessons, fictional profiles, and generated test fixtures only. Do not commit real recordings, learner transcripts, personal information, or secrets. Raw audio retention defaults to off; meaningful speech scoring requires reviewed evidence and calibration, not code tests alone.
+## Quality and cost
 
-See [architecture decisions](docs/decisions/0001-foundation.md), [contributing](CONTRIBUTING.md), and [security reporting](SECURITY.md). Licensed under [Apache 2.0](LICENSE).
+Validated: 31 backend tests, four frontend tests, two real Chromium journeys, tested-state axe checks on desktop/mobile, PostgreSQL migrations, real worker delivery, locked builds, and a four-user concurrent typed smoke. See [validation evidence](docs/validation.md) for limits and exact commands. Hosted GitHub Actions execution is not inferred from local passes.
+
+Use free/open-source dependencies and a scripted teacher by default. A free optional offline transcription adapter is included; paid transcription is an optional disabled adapter. No API key is required for typed lessons or offline recognition. Browser online voices may use vendor services only after an explicit disclosure/opt-in. Hosting and provider free-tier limits must be checked separately.
+
+## Project guide
+
+| Area | Location |
+| --- | --- |
+| Django domain modules and tests | `backend/` |
+| React/TypeScript app and browser tests | `frontend/` |
+| Reproducible dependency snapshots | `requirements.lock`, `frontend/package-lock.json` |
+| Local / production containers | `compose.yaml`, `compose.production.yaml`, `deploy/` |
+| Product scope and phase history | [master plan](docs/master-plan.md), [delivery record](docs/phases.md) |
+| Architecture and API contracts | [architecture](docs/architecture.md), [API guide](docs/api.md) |
+| Learner / content guidance | [user guide](docs/user-guide.md), [authoring guide](docs/content-authoring.md) |
+| Privacy and security | [privacy](docs/privacy.md), [threat model](docs/threat-model.md), [reporting](SECURITY.md) |
+| Portfolio and remaining gates | [case study](docs/case-study.md), [release status](docs/release-status.md) |
+
+Use synthetic lessons, fictional profiles, and generated test fixtures. Never commit real learner recordings, transcripts, personal information, or credentials. See [contributing](CONTRIBUTING.md). Licensed under [Apache 2.0](LICENSE).
