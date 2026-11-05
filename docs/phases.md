@@ -55,3 +55,7 @@ Added task-specific guidance and evidence for grammar, vocabulary, listening-wit
 ## Phase 12 — Microphone capture and audio playback
 
 Added consent-before-capture, 30-second recording, local preview, track cleanup, cancel/discard/retry, device selection after permission, typed fallback, and permission/device errors. Two frontend behavior tests plus lint/build pass. Capture is local until an explicit submit action; asynchronous upload is added in Phase 14. Real microphone hardware and browser support still require pilot verification.
+
+## Phase 13 — Speech service adapters
+
+Added separate transcription, synthesis, pronunciation, and alignment protocols, disabled defaults, explicit test-only mock, and optional OpenAI transcription adapter with timeout/failure fallback. Sixteen backend tests pass. No paid provider is enabled or live-tested; calibrated pronunciation and server TTS remain unavailable and report that honestly.
