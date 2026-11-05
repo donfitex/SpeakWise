@@ -1,3 +1,4 @@
+import { Recorder } from "./Recorder";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "./api";
@@ -226,6 +227,9 @@ export function Classroom() {
                     <p>
                       Model: <strong>{session.activity.example}</strong>
                     </p>
+                    {session.activity.kind === "speaking" && (
+                      <Recorder key={session.activity.id} />
+                    )}
                     <form onSubmit={submit}>
                       <label>
                         Your answer

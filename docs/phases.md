@@ -51,3 +51,7 @@ Connected the course map to saved sessions and added scripted teacher explanatio
 ## Phase 11 — Core English activities
 
 Added task-specific guidance and evidence for grammar, vocabulary, listening-with-caption, reading, sentence building, controlled writing, and typed speaking practice. Thirteen backend tests pass, including each activity type, normalization, positive reference matching, and retry guidance. Open-ended writing and actual listening/speaking proficiency grading are not inferred from controlled text matching.
+
+## Phase 12 — Microphone capture and audio playback
+
+Added consent-before-capture, 30-second recording, local preview, track cleanup, cancel/discard/retry, device selection after permission, typed fallback, and permission/device errors. Two frontend behavior tests plus lint/build pass. Capture is local until an explicit submit action; asynchronous upload is added in Phase 14. Real microphone hardware and browser support still require pilot verification.

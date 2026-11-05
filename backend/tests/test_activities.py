@@ -1,7 +1,7 @@
 import pytest
-from django.core.management import call_command
-from curriculum.models import Activity
 from classroom.services import evaluate
+from curriculum.models import Activity
+from django.core.management import call_command
 
 
 @pytest.mark.django_db
