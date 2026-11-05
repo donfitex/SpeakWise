@@ -83,3 +83,7 @@ Added per-skill recent controlled-task estimates, evidence counts, 1/3/7-day rev
 ## Phase 19 — Dashboard and learning history
 
 Added authenticated home/progress dashboard, completed lesson and attempt counts, actual recorded practice duration, resume links, recommendation reasons, skill evidence/review dates, paginated history, and feedback reporting UI. Twenty-three backend tests and frontend lint/build pass. No invented streak, typed practice time, or single mastery score is shown. Owner isolation and history pagination are tested.
+
+## Phase 20 — Content authoring and review
+
+Added staff administration, draft cloning, read-only submitted/published versions, activity/rubric editing, separate-reviewer publication, archival, and audit records. Twenty-four backend tests pass, including unauthorized author denial, self-review denial, stale-instance edit rejection, and historical version preservation. Admin forms provide content preview; qualified educational review and actual staff assignment remain release tasks.

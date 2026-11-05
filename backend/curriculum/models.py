@@ -80,7 +80,7 @@ class LessonVersion(Record):
 
     def save(self, *args, **kwargs):
         previous = type(self).objects.filter(pk=self.pk).first()
-        if previous and previous.status in ["published", "archived"]:
+        if previous and previous.status in ["review", "published", "archived"]:
             protected = [
                 "lesson_id",
                 "version",
@@ -104,7 +104,7 @@ class Rubric(Record):
             self.pk
             and type(self).objects.filter(pk=self.pk).exists()
             and self.activities.filter(
-                lesson_version__status__in=["published", "archived"]
+                lesson_version__status__in=["review", "published", "archived"]
             ).exists()
         ):
             raise ValidationError("A published rubric is immutable; create a new rubric version.")
@@ -141,6 +141,8 @@ class Activity(Record):
         ]
 
     def clean(self):
+        if LessonVersion.objects.get(pk=self.lesson_version_id).status != "draft":
+            raise ValidationError("Activities can only be edited in draft versions.")
         if self.kind not in self.TYPES:
             raise ValidationError("Unsupported activity type.")
         if (
@@ -153,7 +155,33 @@ class Activity(Record):
             raise ValidationError("Provide a helpful hint.")
 
     def save(self, *args, **kwargs):
+        previous = type(self).objects.filter(pk=self.pk).select_related("lesson_version").first()
+        if previous and previous.lesson_version.status != "draft":
+            raise ValidationError("Submitted activities are immutable.")
         self.full_clean()
-        if self.lesson_version.status in ["published", "archived"]:
+        if self.lesson_version.status in ["review", "published", "archived"]:
             raise ValidationError("Published activities are immutable; edit a new draft.")
         super().save(*args, **kwargs)
+
+
+class ContentReview(Record):
+    version = models.ForeignKey(LessonVersion, on_delete=models.PROTECT, related_name="reviews")
+    requested_by = models.ForeignKey(
+        "auth.User", on_delete=models.SET_NULL, null=True, related_name="content_requests"
+    )
+    reviewed_by = models.ForeignKey(
+        "auth.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="content_reviews",
+    )
+    status = models.CharField(
+        max_length=20,
+        default="pending",
+        choices=[(x, x) for x in ["pending", "approved", "rejected", "archived"]],
+    )
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        permissions = [("publish_content", "Can review and publish lesson content")]
