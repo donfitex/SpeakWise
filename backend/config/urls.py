@@ -1,5 +1,6 @@
 from accounts import views as accounts
 from core.views import health
+from curriculum import views as curriculum
 from django.contrib import admin
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
@@ -21,4 +22,9 @@ urlpatterns += [
     path("api/v1/auth/password-reset/confirm/", accounts.reset_confirm),
     path("api/v1/learners/me/", accounts.me),
     path("api/v1/learners/me/consent/", accounts.consent),
+]
+
+urlpatterns += [
+    path("api/v1/courses/", curriculum.courses),
+    path("api/v1/lessons/<uuid:pk>/", curriculum.lesson),
 ]
