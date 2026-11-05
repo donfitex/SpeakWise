@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from accounts.models import ConsentRecord
 from classroom.models import LessonSession
+from django.conf import settings
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -35,6 +36,11 @@ def representation(job):
 @throttle_classes([SpeechThrottle])
 @transaction.atomic
 def upload(request, pk):
+    if not getattr(settings, "SPEECH_UPLOADS_ENABLED", True):
+        return Response(
+            {"detail": "Audio processing is unavailable in this free pilot. Please use typed practice."},
+            status=503,
+        )
     session = get_object_or_404(
         LessonSession.objects.select_for_update(), pk=pk, learner__user=request.user
     )

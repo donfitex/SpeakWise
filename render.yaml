@@ -1,18 +1,13 @@
-# Single-instance pilot: API and worker share private files on one persistent disk.
-# Review current compute/disk pricing in Render before applying.
+# Free typed-learning pilot. No disk, Redis, or always-on workers.
 services:
   - type: web
     name: speakwise
     runtime: docker
-    plan: starter
+    plan: free
+    region: ohio
     dockerfilePath: ./deploy/render/Dockerfile
     dockerContext: .
     healthCheckPath: /api/v1/health/
-    numInstances: 1
-    disk:
-      name: speakwise-private-media
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings.render
@@ -22,31 +17,5 @@ services:
         value: "false"
       - key: DATABASE_URL
         sync: false
-      - key: REDIS_URL
-        fromService:
-          type: keyvalue
-          name: speakwise-redis
-          property: connectionString
-      - key: SPEECH_PROVIDER
-        value: disabled
       - key: SEED_DEMO
         value: "true"
-      - key: EMAIL_BACKEND
-        value: django.core.mail.backends.smtp.EmailBackend
-      - key: EMAIL_HOST
-        sync: false
-      - key: EMAIL_PORT
-        value: "587"
-      - key: EMAIL_USE_TLS
-        value: "true"
-      - key: EMAIL_HOST_USER
-        sync: false
-      - key: EMAIL_HOST_PASSWORD
-        sync: false
-      - key: DEFAULT_FROM_EMAIL
-        sync: false
-  - type: keyvalue
-    name: speakwise-redis
-    plan: starter
-    maxmemoryPolicy: noeviction
-    ipAllowList: []

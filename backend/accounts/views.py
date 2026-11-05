@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
@@ -148,6 +149,11 @@ def consent(request):
 @throttle_classes([AuthThrottle])
 def password_reset(request):
     csrf_check(request)
+    if not getattr(settings, "PASSWORD_RESET_ENABLED", True):
+        return Response(
+            {"detail": "Password reset is unavailable in this pilot. Please contact the operator."},
+            status=503,
+        )
     email = serializers.EmailField().run_validation(request.data.get("email"))
     for user in get_user_model().objects.filter(email__iexact=email, is_active=True):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
