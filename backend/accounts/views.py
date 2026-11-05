@@ -12,13 +12,13 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import UserRateThrottle
 
 from .models import ConsentRecord, LearnerProfile
 from .serializers import ProfileSerializer
 
 
-class AuthThrottle(AnonRateThrottle):
+class AuthThrottle(UserRateThrottle):
     scope = "auth"
 
 
@@ -119,6 +119,18 @@ def consent(request):
         if not isinstance(value, bool):
             return Response({"detail": "granted must be true or false."}, status=400)
         ConsentRecord.objects.create(learner=profile, granted=value)
+        if not value:
+            from speech.models import SpeechAttempt
+            from speech.tasks import remove_audio
+
+            for job in SpeechAttempt.objects.filter(
+                session__learner=profile, status__in=["queued", "processing"]
+            ):
+                remove_audio(job)
+                job.status = "deleted"
+                job.transcript = ""
+                job.result = {}
+                job.save()
     latest = ConsentRecord.objects.filter(learner=profile).order_by("-created_at").first()
     return Response({"granted": bool(latest and latest.granted), "policy_version": "audio-v1"})
 
@@ -167,3 +179,48 @@ def reset_confirm(request):
     user.set_password(password)
     user.save()
     return Response({"detail": "Password changed. Please sign in."})
+
+
+@api_view(["GET", "DELETE"])
+@transaction.atomic
+def data_controls(request):
+    from classroom.models import LessonSession
+    from speech.models import SpeechAttempt
+    from speech.tasks import remove_audio
+
+    profile = LearnerProfile.objects.get(user=request.user)
+    if request.method == "DELETE":
+        if (
+            not request.user.check_password(request.data.get("password", ""))
+            or request.data.get("confirmation") != "DELETE"
+        ):
+            return Response({"detail": "Enter your password and DELETE to confirm."}, status=400)
+        for job in SpeechAttempt.objects.select_for_update().filter(session__learner=profile):
+            remove_audio(job)
+            job.delete()
+        user = request.user
+        logout(request)
+        user.delete()
+        return Response(status=204)
+    sessions = LessonSession.objects.filter(learner=profile).prefetch_related(
+        "attempts", "speech_attempts"
+    )
+    return Response(
+        {
+            "profile": ProfileSerializer(profile).data,
+            "consent": list(
+                profile.consentrecord_set.values("policy_version", "granted", "created_at")
+            ),
+            "sessions": [
+                {
+                    "id": str(s.id),
+                    "completed_at": s.completed_at,
+                    "attempts": list(s.attempts.values("answer", "result", "created_at")),
+                    "speech_results": list(
+                        s.speech_attempts.values("transcript", "result", "created_at")
+                    ),
+                }
+                for s in sessions
+            ],
+        }
+    )

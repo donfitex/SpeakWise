@@ -63,3 +63,5 @@ urlpatterns += [
     path("api/v1/learners/me/history/", progress.history),
     path("api/v1/learners/me/summary/", progress.summary),
 ]
+
+urlpatterns += [path("api/v1/learners/me/data/", accounts.data_controls)]

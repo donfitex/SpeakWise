@@ -58,9 +58,24 @@ services:
     build:
       context: frontend
       secrets: [system_ca]
+    environment:
+      API_PROXY_TARGET: http://api:8000
     volumes: [./frontend:/app, frontend_modules:/app/node_modules]
     ports: ['127.0.0.1:5173:5173']
     command: [npm, run, dev, --, --host, 0.0.0.0]
+    depends_on:
+      api: {condition: service_healthy}
+  scheduler:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      secrets: [system_ca]
+    env_file: .env
+    environment:
+      DATABASE_HOST: db
+      REDIS_URL: redis://redis:6379/0
+    volumes: [./backend:/app/backend, private_media:/app/private-media]
+    command: [celery, --workdir=backend, -A, config, beat, --loglevel=warning, --schedule=/tmp/speakwise-beat]
     depends_on:
       api: {condition: service_healthy}
 volumes:

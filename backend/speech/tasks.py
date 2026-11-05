@@ -123,3 +123,10 @@ def purge_expired_audio():
         job.save()
         count += 1
     return count
+
+
+@shared_task
+def purge_learner_data():
+    from django.core.management import call_command
+
+    call_command("purge_learner_data")

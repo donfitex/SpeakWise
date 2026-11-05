@@ -87,3 +87,7 @@ Added authenticated home/progress dashboard, completed lesson and attempt counts
 ## Phase 20 — Content authoring and review
 
 Added staff administration, draft cloning, read-only submitted/published versions, activity/rubric editing, separate-reviewer publication, archival, and audit records. Twenty-four backend tests pass, including unauthorized author denial, self-review denial, stale-instance edit rejection, and historical version preservation. Admin forms provide content preview; qualified educational review and actual staff assignment remain release tasks.
+
+## Phase 21 — Privacy, safety, and accessibility hardening
+
+Added consent revocation that stops/deletes pending audio, owner data export, password-confirmed account deletion with file cleanup, 90-day inactive-session purge, scheduler service, shared production throttling, and privacy/threat-model documentation. Twenty-five backend tests plus three frontend tests and frontend lint/build pass. Browser accessibility checks follow in Phase 22; deployment backups, jurisdictional review, and verified email/edge-abuse controls remain release gates.

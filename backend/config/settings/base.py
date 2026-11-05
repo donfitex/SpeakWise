@@ -125,3 +125,18 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 3 * 1024 * 1024
 CELERY_BEAT_SCHEDULE = {
     "purge-audio": {"task": "speech.tasks.purge_expired_audio", "schedule": 300.0}
 }
+
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS", default=["http://localhost:5173", "http://127.0.0.1:5173"]
+)
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@localhost")
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.locmem.EmailBackend")
+EMAIL_HOST = env("EMAIL_HOST", default="localhost")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+CELERY_BEAT_SCHEDULE["purge-learner-data"] = {
+    "task": "speech.tasks.purge_learner_data",
+    "schedule": 86400.0,
+}

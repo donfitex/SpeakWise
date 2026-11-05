@@ -1,3 +1,4 @@
+import { PrivacyControls } from "./PrivacyControls";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "./api";
@@ -279,6 +280,7 @@ export function Account() {
           are for learners aged 16 and over.
         </p>
       </div>
+      {profile && <PrivacyControls />}
     </>
   );
 }
