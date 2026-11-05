@@ -1,3 +1,4 @@
+import { Account } from "./Account";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, NavLink, Route, Routes, Link } from "react-router-dom";
@@ -104,15 +105,7 @@ function App() {
               </div>
             }
           />
-          <Route
-            path="/account"
-            element={
-              <div className="card">
-                <h1>Your learning, your way.</h1>
-                <p>Account setup is coming in the next phase.</p>
-              </div>
-            }
-          />
+          <Route path="/account" element={<Account />} />
           <Route
             path="*"
             element={

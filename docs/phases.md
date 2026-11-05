@@ -27,3 +27,7 @@ Added strict TypeScript/Vite entry points, responsive design tokens, semantic na
 ## Phase 05 — CI and code quality
 
 Added exact Python dependency snapshot, npm lockfile, compatible TypeScript 5.9 (TypeScript 7 was outside the linter peer range), Ruff, ESLint/Prettier, CI on pushes/PRs, migration checks, and review template. Local frontend lint/typecheck/build and backend tests are gates; hosted GitHub Actions execution is not claimed. Docker builds passed and Compose reports all five services healthy after Phases 03–04. Browser HTTP and worker behavior are validated in subsequent integration checks.
+
+## Phase 06 — Accounts and learner profile
+
+Implemented session registration/login/logout, CSRF-protected unauthenticated writes, password reset tokens with non-enumerating responses, owner-only profile/preferences, adult/older-teen pilot eligibility, and append-only audio consent history. Added account UI with reset and preference forms. Three backend tests pass, including cross-user isolation, CSRF rejection, validation, and single-use reset; frontend lint/build pass. Reset email is in-memory locally; a production email transport remains an operator requirement. Neon URL support enforces full TLS verification; live Neon validation awaits secure DATABASE_URL and host access.
