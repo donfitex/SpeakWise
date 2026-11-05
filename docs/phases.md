@@ -23,3 +23,7 @@ Added Django settings split, session-authenticated DRF defaults, versioned API, 
 ## Phase 04 — Frontend foundation
 
 Added strict TypeScript/Vite entry points, responsive design tokens, semantic navigation, skip link, route fallbacks, and a CSRF-aware API client with offline/error handling. `npm run build` passes. Account/classroom/progress routes are explicitly labelled placeholders for subsequent phases. Browser layout validation is deferred to journey testing.
+
+## Phase 05 — CI and code quality
+
+Added exact Python dependency snapshot, npm lockfile, compatible TypeScript 5.9 (TypeScript 7 was outside the linter peer range), Ruff, ESLint/Prettier, CI on pushes/PRs, migration checks, and review template. Local frontend lint/typecheck/build and backend tests are gates; hosted GitHub Actions execution is not claimed. Docker builds passed and Compose reports all five services healthy after Phases 03–04. Browser HTTP and worker behavior are validated in subsequent integration checks.
