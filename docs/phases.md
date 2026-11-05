@@ -35,3 +35,7 @@ Implemented session registration/login/logout, CSRF-protected unauthenticated wr
 ## Phase 07 — Course and content data model
 
 Added UUID course/unit/lesson/version/skill/activity/rubric models, draft visibility, published-content immutability, safe public lesson representations (no answer keys), and idempotent synthetic demo seeding across pre-A1–B1. Four backend tests pass, including repeated seeding, hidden drafts, and immutable published prompts. The sample track is deliberately small and marked as awaiting educational review, not complete CEFR coverage.
+
+## Phase 08 — Learner onboarding and placement
+
+Added goals/level preferences, a four-question text diagnostic with server-controlled sequencing, owner-only results, low-confidence evidence, and learner override. Five backend tests and frontend lint/build pass. Listening and speaking placement are explicitly unmeasured; the full multimodal diagnostic acceptance gate remains open pending reliable speech services and reviewed content.

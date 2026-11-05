@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 export type Profile = {
@@ -87,6 +88,11 @@ export function Account() {
             {message}
           </p>
         )}
+        <p>
+          <Link to="/placement">
+            Find a starting level with a short placement
+          </Link>
+        </p>
         <form onSubmit={submit}>
           {profile ? (
             <>

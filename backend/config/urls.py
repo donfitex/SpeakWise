@@ -4,6 +4,7 @@ from curriculum import views as curriculum
 from django.contrib import admin
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from placement import views as placement
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,4 +28,10 @@ urlpatterns += [
 urlpatterns += [
     path("api/v1/courses/", curriculum.courses),
     path("api/v1/lessons/<uuid:pk>/", curriculum.lesson),
+]
+
+urlpatterns += [
+    path("api/v1/placement-sessions/", placement.start),
+    path("api/v1/placement-sessions/<uuid:pk>/answers/", placement.detail),
+    path("api/v1/placement-sessions/<uuid:pk>/result/", placement.detail),
 ]

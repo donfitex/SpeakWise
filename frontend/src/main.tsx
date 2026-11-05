@@ -1,3 +1,4 @@
+import { Placement } from "./Placement";
 import { Account } from "./Account";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -91,6 +92,7 @@ function App() {
       </header>
       <main id="main" tabIndex={-1}>
         <Routes>
+          <Route path="/placement" element={<Placement />} />
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
           <Route
