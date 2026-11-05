@@ -15,4 +15,4 @@ SPEECH_UPLOADS_ENABLED = False
 SPEECH_PROVIDER = "disabled"
 PASSWORD_RESET_ENABLED = False
 # The free pilot sends no email. Never log password-reset tokens.
-MAILERS = {"default": {"BACKEND": "django.core.mail.backends.dummy.EmailBackend"}}
+MAILERS = {"default": {"BACKEND": "core.mail.DisabledEmailBackend"}}

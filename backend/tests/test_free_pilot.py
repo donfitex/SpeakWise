@@ -34,3 +34,14 @@ def test_free_pilot_password_reset_never_sends_or_claims_delivery(settings):
     assert response.status_code == 503
     assert "unavailable" in response.json()["detail"]
     send.assert_not_called()
+
+
+def test_disabled_email_backend_refuses_delivery():
+    from core.mail import DisabledEmailBackend
+    from django.core.exceptions import ImproperlyConfigured
+    from django.core.mail import EmailMessage
+
+    with pytest.raises(ImproperlyConfigured, match="unavailable"):
+        DisabledEmailBackend().send_messages(
+            [EmailMessage("Synthetic", "Synthetic", "test@example.com", ["test@example.com"])]
+        )
