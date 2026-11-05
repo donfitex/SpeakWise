@@ -91,6 +91,9 @@ def process_speech(pk):
             }
             remove_audio(job)
             job.save()
+            from assessment.services import record_speech
+
+            record_speech(job)
     except Exception:
         with transaction.atomic():
             job = SpeechAttempt.objects.select_for_update().get(pk=pk)

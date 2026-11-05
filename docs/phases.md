@@ -63,3 +63,7 @@ Added separate transcription, synthesis, pronunciation, and alignment protocols,
 ## Phase 14 — Asynchronous speech processing
 
 Added consent/ownership checks, private bounded uploads, idempotent jobs, worker-side audio decoding/duration validation, status polling, transcript deletion, provider fallback, and expiry cleanup. Eighteen backend tests and two frontend tests pass, including synthetic WAV decoding, malformed media, duplicate jobs, expiry, and access denial. Raw audio is removed after processing or failure. Live provider transcription remains unverified; disabled provider fails safely and typed practice remains available.
+
+## Phase 15 — Pronunciation and elocution feedback
+
+Added versioned assessment evidence, rubric-bound dimension validation, uncertainty/mock suppression, and owner-only feedback reporting. Twenty backend tests pass; out-of-range/unknown dimensions are rejected and weak evidence never produces a score. No calibrated pronunciation evaluator exists, so pronunciation, stress, pace, and intonation scoring remain an explicit release gate; code cannot honestly establish scoring quality without reviewed recordings.

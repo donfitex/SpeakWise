@@ -56,6 +56,9 @@ def submit_answer(session, activity_id, answer, request_id):
     attempt = ActivityAttempt.objects.create(
         session=session, activity=activity, request_id=request_id, answer=answer, result=result
     )
+    from assessment.services import record_text
+
+    record_text(attempt)
     TeacherTurn.objects.create(
         session=session, speaker="learner", content=answer, activity=activity
     )

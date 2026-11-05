@@ -1,4 +1,5 @@
 from accounts import views as accounts
+from assessment import views as assessment
 from classroom import views as classroom
 from core.views import health
 from curriculum import views as curriculum
@@ -49,3 +50,5 @@ urlpatterns += [
     path("api/v1/speech-attempts/<uuid:pk>/status/", speech.detail),
     path("api/v1/speech-attempts/<uuid:pk>/feedback/", speech.detail),
 ]
+
+urlpatterns += [path("api/v1/assessments/<uuid:pk>/report/", assessment.report)]

@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "placement",
     "classroom",
     "speech",
+    "assessment",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
