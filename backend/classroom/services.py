@@ -54,6 +54,7 @@ def submit_answer(session, activity_id, answer, request_id):
     if str(activity.id) != str(activity_id):
         raise ValidationError("Answer the current activity first. Refresh your lesson.")
     result = evaluate(activity, answer)
+    session.save(update_fields=["updated_at"])
     attempt = ActivityAttempt.objects.create(
         session=session, activity=activity, request_id=request_id, answer=answer, result=result
     )
@@ -83,6 +84,7 @@ def representation(session):
     return {
         "id": str(session.id),
         "title": session.lesson_version.lesson.title,
+        "lesson_version": str(session.lesson_version_id),
         "objective": session.lesson_version.objective,
         "explanation": session.lesson_version.explanation,
         "position": session.position,

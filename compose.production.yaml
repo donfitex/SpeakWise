@@ -1,0 +1,71 @@
+name: speakwise-production
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: backend/Dockerfile
+    secrets: [system_ca]
+  env_file: .env.production
+  environment:
+    DJANGO_SETTINGS_MODULE: config.settings.production
+    DATABASE_URL: ${DATABASE_URL:?Configure your Neon PostgreSQL DATABASE_URL securely}
+    REDIS_URL: redis://redis:6379/0
+    TRUST_PROXY_TLS: 'true'
+  volumes: [private_media:/app/private-media]
+  restart: unless-stopped
+services:
+  api:
+    <<: *backend
+    command: [gunicorn, --chdir, backend, config.wsgi:application, --bind, '0.0.0.0:8000', --workers, '2', --timeout, '120', --access-logfile, /dev/null]
+    depends_on:
+      redis: {condition: service_healthy}
+    mem_limit: 512m
+    healthcheck:
+      test: [CMD, python, -c, 'import urllib.request; urllib.request.urlopen("http://localhost:8000/api/v1/health/")']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+  worker:
+    <<: *backend
+    command: [celery, --workdir=backend, -A, config, worker, --loglevel=warning, --concurrency=2]
+    depends_on:
+      api: {condition: service_healthy}
+    mem_limit: 1g
+  scheduler:
+    <<: *backend
+    command: [celery, --workdir=backend, -A, config, beat, --loglevel=warning, --schedule=/tmp/speakwise-beat]
+    depends_on:
+      api: {condition: service_healthy}
+    mem_limit: 256m
+  redis:
+    image: redis:7-bookworm
+    command: [redis-server, --appendonly, 'yes', --maxmemory, 128mb, --maxmemory-policy, noeviction]
+    volumes: [redis_data:/data]
+    restart: unless-stopped
+    mem_limit: 256m
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  web:
+    build:
+      context: .
+      dockerfile: deploy/web.Dockerfile
+      secrets: [system_ca]
+    environment:
+      DOMAIN: ${DOMAIN:?Set your public hostname, or localhost for an internal TLS staging test}
+      NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1},api,redis
+    ports: ['${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-8080}:80','${BIND_ADDRESS:-127.0.0.1}:${HTTPS_PORT:-8443}:443']
+    volumes: [caddy_data:/data,caddy_config:/config]
+    depends_on:
+      api: {condition: service_healthy}
+    restart: unless-stopped
+    mem_limit: 256m
+volumes:
+  private_media:
+  redis_data:
+  caddy_data:
+  caddy_config:
+secrets:
+  system_ca:
+    file: ${SYSTEM_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}

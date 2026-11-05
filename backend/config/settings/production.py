@@ -17,3 +17,7 @@ CACHES = {
     }
 }
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+
+SECURE_REDIRECT_EXEMPT = [r"^api/v1/health/$"]
+if env.bool("TRUST_PROXY_TLS", default=False):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

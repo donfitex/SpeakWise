@@ -16,6 +16,7 @@ export type Activity = {
 export type Session = {
   id: string;
   title: string;
+  lesson_version: string;
   objective: string;
   explanation: string;
   position: number;
@@ -133,6 +134,7 @@ export function Courses() {
 }
 export function Classroom() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null),
     [answer, setAnswer] = useState(""),
     [error, setError] = useState(""),
@@ -218,6 +220,28 @@ export function Classroom() {
                   <Link className="button" to="/progress">
                     See your next step
                   </Link>
+                  <button
+                    className="secondary"
+                    onClick={async () => {
+                      try {
+                        const next = await api<Session>("/lesson-sessions/", {
+                          method: "POST",
+                          body: JSON.stringify({
+                            lesson_version: session.lesson_version,
+                            review: true,
+                          }),
+                        });
+                        setFeedback("");
+                        setAnswer("");
+                        setHint(false);
+                        navigate(`/classroom/${next.id}`);
+                      } catch (e) {
+                        setError((e as Error).message);
+                      }
+                    }}
+                  >
+                    Practise this lesson again
+                  </button>
                 </>
               ) : (
                 session.activity && (

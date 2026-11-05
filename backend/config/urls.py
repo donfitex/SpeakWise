@@ -1,11 +1,12 @@
 from accounts import views as accounts
 from assessment import views as assessment
 from classroom import views as classroom
+from core.contracts import install as install_contracts
 from core.views import health
 from curriculum import views as curriculum
 from django.contrib import admin
 from django.urls import path
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerSplitView
 from placement import views as placement
 from progress import views as progress
 from speech import views as speech
@@ -14,7 +15,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/health/", health),
     path("api/v1/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/v1/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
+    path("api/v1/docs/", SpectacularSwaggerSplitView.as_view(url_name="schema")),
 ]
 
 
@@ -65,3 +66,6 @@ urlpatterns += [
 ]
 
 urlpatterns += [path("api/v1/learners/me/data/", accounts.data_controls)]
+
+
+install_contracts()

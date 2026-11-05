@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
+    "drf_spectacular_sidecar",
     "core",
     "accounts",
     "curriculum",
@@ -102,7 +103,6 @@ CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_TIME_LIMIT = 120
-EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -130,13 +130,20 @@ CSRF_TRUSTED_ORIGINS = env.list(
     "CSRF_TRUSTED_ORIGINS", default=["http://localhost:5173", "http://127.0.0.1:5173"]
 )
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@localhost")
-EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.locmem.EmailBackend")
-EMAIL_HOST = env("EMAIL_HOST", default="localhost")
-EMAIL_PORT = env.int("EMAIL_PORT", default=587)
-EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 CELERY_BEAT_SCHEDULE["purge-learner-data"] = {
     "task": "speech.tasks.purge_learner_data",
     "schedule": 86400.0,
 }
+
+_mail_backend = env("EMAIL_BACKEND", default="django.core.mail.backends.locmem.EmailBackend")
+_mail_options = {}
+if _mail_backend == "django.core.mail.backends.smtp.EmailBackend":
+    _mail_options = {
+        "host": env("EMAIL_HOST", default="localhost"),
+        "port": env.int("EMAIL_PORT", default=587),
+        "use_tls": env.bool("EMAIL_USE_TLS", default=True),
+        "username": env("EMAIL_HOST_USER", default=""),
+        "password": env("EMAIL_HOST_PASSWORD", default=""),
+        "timeout": 15,
+    }
+MAILERS = {"default": {"BACKEND": _mail_backend, "OPTIONS": _mail_options}}

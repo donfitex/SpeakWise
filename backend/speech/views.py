@@ -62,6 +62,7 @@ def upload(request, pk):
     }.get(audio.content_type.split(";")[0])
     if not suffix:
         return Response({"detail": "Use WebM, Ogg, MP4, or WAV audio."}, status=400)
+    session.save(update_fields=["updated_at"])
     audio.name = str(uuid.uuid4()) + suffix
     job = SpeechAttempt.objects.create(
         session=session,

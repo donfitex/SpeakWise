@@ -95,3 +95,7 @@ Added consent revocation that stops/deletes pending audio, owner data export, pa
 ## Phase 22 — Integration tests and pilot quality
 
 Added real Chromium journey/axe desktop/mobile/keyboard checks, recording lifecycle test, PostgreSQL test option, live worker smoke command, four-user concurrent typed smoke, and hosted journey CI configuration. 28 backend tests, four frontend tests, two browser tests, and live worker/concurrency checks pass. Browser testing found and fixed proxy Host handling and reused form fields. See validation.md. Diverse consented speech evaluation, scoring calibration, educator review, and full manual accessibility remain open pilot-release gates.
+
+## Phase 23 — Deployment and operations
+
+Added production Gunicorn/Caddy images and Compose, verified local internal TLS health/static responses, private API/Redis networking, resource caps, security headers, collected static assets, self-hosted OpenAPI UI, validated API contracts, mailer modernization, and deployment/backup/incident/spending runbook. Fixed non-root copied-source ownership and internal proxy routing found during staging. Local staging uses local PostgreSQL only. Public deployment, live Neon, SMTP delivery, managed private storage/backups and restore are not complete; staging's development mailer correctly fails the deployment email gate. No cloud environment was published and no paid infrastructure was provisioned.

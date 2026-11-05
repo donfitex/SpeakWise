@@ -233,3 +233,4 @@ recordings/
 
 private-media/
 backend/staticfiles/
+!.env.production.example
